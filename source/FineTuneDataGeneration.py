@@ -72,18 +72,18 @@ def QuestionParaphrase(client, question):
 # Function to generate answers for a question
 def AnswerGeneration(client, question):
     answers = []
-    for _ in range(3):
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": f"""Provide three different answers to the following question, each with a slightly 
-                 different style. Ensure that each answer is a somehow different from the other or have different information.
-                 Format the answers as a numbered list starting from 1. Each answer should start on a new line and be preceded by its number and a period. 
-                 Organize it as follows: '1. [First answer] 2. [Second answer] 3. [Third answer]': {question}"""},
-                {"role": "user", "content": "Give me a list of three answers"}
-            ]
-        )
-        answers = response.choices[0].message.content.strip()
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": f"""Provide three different answers to the following question, each with a slightly 
+                different style. Ensure that each answer is a somehow different from the other or have different information.
+                Format the answers as a numbered list starting from 1. Each answer should start on a new line and be preceded by its number and a period. 
+                Organize it as follows: '1. [First answer] 2. [Second answer] 3. [Third answer]': {question}"""},
+            {"role": "user", "content": "Give me a list of three answers"}
+        ]
+    )
+    answers = response.choices[0].message.content.strip()
     return answers
 
 
