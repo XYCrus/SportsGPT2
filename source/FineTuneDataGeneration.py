@@ -5,7 +5,7 @@ import json
 import re
 
 #%%
-# Function to paraphrase tags
+# Function to generate tags
 def TagGeneration(client):
     response = client.chat.completions.create(
     model = "gpt-4",
@@ -27,7 +27,7 @@ def TagGeneration(client):
 
     return ResponseStr
 
-# convert tag into list type
+# Convert tags into list
 def Tag2List(ResponseStr):
     lines = ResponseStr.strip().split('\n')
 
@@ -35,8 +35,8 @@ def Tag2List(ResponseStr):
 
     return SportsList
 
-# Function to 
-def generate_question(client, tag):
+# Function to generate questions from tag
+def QuestionGeneration(client, tag):
     response = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
@@ -52,8 +52,8 @@ def generate_question(client, tag):
     return response.choices[0].message.content.strip()
 
 # Function to paraphrase a question
-def paraphrase_question(client, question):
-    paraphrased_questions = []
+def QuestionParaphrase(client, question):
+    ParaQuestions = []
     for _ in range(2):
         response = client.chat.completions.create(
             model="gpt-3.5-turbo",
@@ -65,12 +65,12 @@ def paraphrase_question(client, question):
                 {"role": "user", "content": ""}
             ]
         )
-        paraphrased_questions.append(response.choices[0].message.content.strip())
+        ParaQuestions.append(response.choices[0].message.content.strip())
         time.sleep(1)  
-    return paraphrased_questions
+    return ParaQuestions
 
 # Function to generate answers for a question
-def generate_answers(client, question):
+def AnswerGeneration(client, question):
     answers = []
     for _ in range(3):
         response = client.chat.completions.create(
@@ -89,24 +89,25 @@ def generate_answers(client, question):
 
 def Tag2All(client, tags):
     finetune = []
+
     for index, tag in enumerate(tags):
         print(f"Processing tag {index + 1}/{len(tags)}: {tag}")
 
-        questions = generate_question(client, tag)
+        questions = QuestionGeneration(client, tag)
         QuestionList = questions.strip().split('\n')
         QuestionList = [line.split('. ', 1)[1] for line in QuestionList if line]
 
         for question in QuestionList:
-            paraphrased_qs = paraphrase_question(client, question)
-            all_questions = [question] + paraphrased_qs
+            ParaQuestions = QuestionParaphrase(client, question)
+            AllQuestions = [question] + ParaQuestions
 
-            answers = generate_answers(client, question)
+            answers = AnswerGeneration(client, question)
             answers = re.split(r'\d+\.\s', answers)
             answers = [answer.strip() for answer in answers if answer.strip()]
 
             intent = {
                 "tag": tag,
-                "questions": all_questions,
+                "questions": AllQuestions,
                 "responses": answers
             }
 
