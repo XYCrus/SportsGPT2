@@ -24,8 +24,7 @@ def TagGeneration(client, NumTag = 200):
         Organize it as follows: '1. [First tag] 2. [Second tag] ...'"""}, #context
         
         {"role": "user", 
-        "content": f"""Please generate a list of {NumTag} unique sports-related tags.
-        """}  #prompt
+        "content": f"""Please generate a list of {NumTag} unique sports-related tags."""}  #prompt
     ])
 
     ResponseStr = response.choices[0].message.content.strip()
@@ -43,15 +42,17 @@ def Tag2List(ResponseStr):
 # Function to generate questions from tag
 def QuestionGeneration(client, tag, NumQuestion):
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
+        model = "gpt-3.5-turbo",
+        messages = [
             {"role": "system", 
-             "content": f"""Generate {NumQuestion} questions that a user might naturally ask in a casual conversation about {tag}. 
-             Each question should be engaging, easy to understand for a broad audience, distinct from each other, and sport-related.
-             Format the {NumQuestion} questions as a numbered list starting from 1. 
+             "content": f"""Generate {NumQuestion} questions that a user might naturally ask in a casual conversation 
+             about {tag}. Each question should be engaging, easy to understand for a broad audience, distinct from 
+             each other, and sport-related. Format the {NumQuestion} questions as a numbered list starting from 1. 
              Each question should start on a new line and be preceded by its number and a period. 
              Organize it as follows: '1. [First question] 2. [Second question]'"""},
-            {"role": "user", "content": f"Give me a list of {NumQuestion} questions"}
+
+            {"role": "user", 
+             "content": f"Give me a list of {NumQuestion} questions"}
         ]
     )
     return response.choices[0].message.content.strip()
@@ -61,12 +62,13 @@ def QuestionParaphrase(client, question, NumParaphrase):
     ParaQuestions = []
     for _ in range(NumParaphrase):
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
+            model = "gpt-3.5-turbo",
+            messages = [
                 {"role": "system", 
-                 "content": """Paraphrase the following question in a conversational 
+                 "content": f"""Paraphrase the following question in a conversational 
                  and user-friendly manner, as if it were being asked in a casual, 
-                 real-life scenario: """ + question},
+                 real-life scenario: {question}"""},
+
                 {"role": "user", "content": ""}
             ]
         )
@@ -79,15 +81,17 @@ def AnswerGeneration(client, question, NumAnswer):
     answers = []
 
     response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
+        model = "gpt-3.5-turbo",
+        messages = [
             {"role": "system", 
              "content": f"""Provide {NumAnswer} different answers to the following question, each with a slightly 
                 different style. Ensure that each answer is a somehow different from the other or have different 
                 information. Format the answers as a numbered list starting from 1. Each answer should start on a 
                 new line and be preceded by its number and a period. 
                 Organize it as follows: '1. [First answer] 2. [Second answer] 3. [Third answer]': {question}"""},
-            {"role": "user", "content": f"Give me a list of {NumAnswer} answers"}
+
+            {"role": "user", 
+             "content": f"Give me a list of {NumAnswer} answers"}
         ]
     )
     answers = response.choices[0].message.content.strip()
@@ -112,11 +116,9 @@ def Tag2All(client, tags, NumQuestion, NumParaphrase, NumAnswer):
             answers = re.split(r'\d+\.\s', answers)
             answers = [answer.strip() for answer in answers if answer.strip()]
 
-            intent = {
-                "tag": tag,
-                "questions": AllQuestions,
-                "responses": answers
-            }
+            intent = {"tag": tag,
+                      "questions": AllQuestions,
+                      "responses": answers}
 
             finetune.append(intent)
 
