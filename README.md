@@ -2,9 +2,16 @@
 
 ## Fine Tune Space
 Generate Tags, Questions and Respones from GPT-3.5-turbo
-* cd source
-* python FineTuneDataGeneration.py
+
+*python FineTuneDataGeneration.py api_key Numtag NumQuestion NumParaphrase NumAnswer*
+* api_key: Your Api Key
+* Numtag: number of tags, default 200, optional
+* NumQuestion: number of questions, default 2, optional
+* NumParaphrase: number of question paraphrases, default 1, optional
+* NumAnswer: number of answers, default 3, optional
 
 Convert Json to TXT for fine-tune
-* cd source
-* python Json2Txt.py
+*python Json2Txt.py*
+
+
+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
